@@ -1,0 +1,4 @@
+spyne
+requests
+re
+logging
