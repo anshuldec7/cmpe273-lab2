@@ -35,40 +35,34 @@ class CrimeStatistics(ServiceBase):
         for key in json_obj['crimes']:
 
             address = re.split(r'\bBLOCK', key["address"])
-
+            #Checking All the possible Street Types that can be inferred if there is no "BLOCK" in the Data
             if re.search("BL", address[0]) or re.search(r'\bST', address[0]) or re.search(r'\bAV',
                                                                                           address[0]) or re.search(
-                    r'\bBROADWAY', address[0]) or re.search(r'\bBOULEVARD', address[0]) or re.search(r'\bRD',
-                                                                                                     address[0]):
-                temp1 = address[0].strip().replace("OF ", "")
-                tmp1 = re.split("&|AND|/", temp1)   
-                street_list.append(tmp1[0].strip())
-                if (len(tmp1) > 1):
-                    street_list.append(tmp1[1].strip())
-            if (len(address) > 1) and (
-                                        re.search("BL", address[1]) or re.search(r'\bST', address[1]) or re.search(
-                                    r'\bAV', address[1]) or re.search(r'\bBROADWAY', address[1]) or re.search(
-                            r'\bBOULEVARD', address[1]) or re.search(r'\bRD', address[1])):
-                temp1 = address[1].strip().replace("OF ", "")
-                tmp2 = temp1.split("&")
-                street_list.append(tmp2[0].strip())
-                if (len(tmp2) > 1):
-                    street_list.append(tmp2[1].strip())
-            if (len(address) > 2) and (
-                                        re.search("BL", address[2]) or re.search(r'\bST', address[2]) or re.search(
-                                    r'\bAV', address[2]) or re.search(r'\bBROADWAY', address[2]) or re.search(
-                            r'\bBOULEVARD', address[2]) or re.search(r'\bRD', address[2])):
-                temp1 = address[2].strip().replace("OF ", "")
-                tmp3 = temp1.split('[&|AND]')
-                street_list.append(tmp3[0].strip())
-                if (len(tmp3) > 1):
-                    street_list.append(tmp3[1].strip())
+                r'\bBROADWAY', address[0]) or re.search(r'\bBOULEVARD', address[0]) or re.search(r'\bRD',
+                                                                                                 address[0]):
+              # Split on the basis of "&"
+                tmp = re.split("&|AND|/", (address[0].strip().replace("OF ", "")))
+                street_list.append(tmp[0].strip())
+                if (len(tmp) > 1):
+                    street_list.append(tmp[1].strip())
+            if len(address) > 1 :
+                    # Split on the basis of "&" and Replacing "OF" if any
+                    tmp = address[1].strip().replace("OF ", "").split('&')
+                    street_list.append(tmp[0].strip())
+                    if (len(tmp) > 1):
+                        street_list.append(tmp[1].strip())
+            if len(address) > 2 :
+                # Split on the basis of "&" and replacing "OF" if any
+                tmp = address[2].strip().replace("OF ", "").split('&')
+                street_list.append(tmp[0].strip())
+                if (len(tmp) > 1):
+                    street_list.append(tmp[1].strip())
 
             type_list.append(key["type"])
             date = re.split('\s+', key["date"])
 
             time = re.split(':', date[1])
-
+            #Logic to sagregate the time into different buckets
             if (int(time[0]) >= 1 and int(time[0]) <= 2) or (int(time[0]) == 12 and int(time[1]) > 0) or (
                     int(time[0]) == 3 and int(time[1]) == 0):
                 if date[2] == "AM":
